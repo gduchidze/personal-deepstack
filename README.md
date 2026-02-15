@@ -10,33 +10,6 @@ A professional, high-performance iOS app built with Expo and React Native for tr
 - Linear gradients with glowing effects around active components
 - All UI labels in Georgian (ქართული)
 
-### 🔔 Protocol Engine & Notifications
-- Local notifications for schedule transitions:
-  - 07:30: "გაიღვიძე. დროა დაიწყო პროტოკოლი."
-  - 08:00: "DEEP WORK: როუდმაპი დაიწყო. ტელეფონი გადადე!"
-  - 10:30: "სამსახური 1: ფოკუს ბლოკი."
-  - 12:15: "STANDUP: მოემზადე შეხვედრისთვის."
-  - 17:00: "სამსახური 2: დაიწყე მუშაობა."
-  - 20:00: "GYM: დროა ფიზიკური დატვირთვისთვის."
-  - 23:00: "SLEEP: დაიძინე. ძილი მუშაობის ნაწილია."
-
-### 📊 Roadmap Tracker
-- Maps current week (based on program start: Feb 16, 2026)
-- Displays daily tasks from the 65-week roadmap
-- Progress circle showing completion percentage
-- Week-by-week topic breakdown
-
-### ✅ Interactive Logging
-- "პროგრესის დალოგვა" button with haptic feedback
-- Persistent storage using AsyncStorage
-- Minimalist heatmap visualization
-- Streak counter
-
-### 📅 Daily Schedule
-- Real-time schedule display
-- Highlights current activity
-- Special handling for Tue/Thu meetings and Wed/Sat/Sun GF time
-
 ## 🛠️ Technologies
 
 - **Framework**: Expo + React Native + TypeScript
@@ -105,20 +78,6 @@ npm run ios
 npm run android
 ```
 
-## 📊 Data Format
-
-The app reads from `AI_Engineer_15Month_Roadmap.xlsx` with the following sheets:
-
-### Days Sheet
-| დრო | ორშაბათი | სამშაბათი | ოთხშაბათი | ხუთშაბათი | პარასკევი | შაბათი | კვირა |
-|-----|---------|----------|----------|----------|-----------|--------|-------|
-| 07:30 | 🛌 ძილი | ... | ... | ... | ... | ... | ... |
-
-### 65-Week Detailed Plan Sheet
-| Week | Phase | Day | Time Block | Topic / Activity | DSA Practice | ... |
-|------|-------|-----|------------|------------------|--------------|-----|
-| Week 1 | Phase 1 | Mon | Block A | Karpathy Video 1 | ... | ... |
-
 ## 🎨 Design Philosophy
 
 - **Pure Black Background**: #000000 for OLED optimization
@@ -130,23 +89,7 @@ The app reads from `AI_Engineer_15Month_Roadmap.xlsx` with the following sheets:
 - **Typography**: Monospace fonts throughout for terminal aesthetic
 - **Visual Effects**: Glowing borders, gradients, and subtle shadows
 
-## 🔐 Permissions
-
-The app requires the following permissions:
-- **Notifications**: For schedule alerts
-- **Haptics**: For tactile feedback
-
 ## 📝 License
 
 Private project for personal use.
 
-## 👨‍💻 Developer
-
-Built with precision & discipline for the DeepStack Protocol Engine.
-
----
-
-**Version**: 1.0.0
-**Start Date**: February 16, 2026
-**Duration**: 65 weeks
-**End Date**: June 20, 2027
