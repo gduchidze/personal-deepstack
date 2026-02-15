@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Award, Zap, Target, Trophy, Star, Flame } from 'lucide-react-native';
 import { ActivityLog } from '../types';
+import { getStreak, getLast30DaysCompletion } from '../utils/streakCalculator';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LOGS_KEY = '@deepstack_logs';
 
@@ -34,7 +36,7 @@ export const AchievementBadges: React.FC = () => {
           icon: Star,
           title: 'პირველი ნაბიჯი',
           description: 'დაალოგე პირველი დღე',
-          color: '#ffd700',
+          color: colors.gold,
           unlocked: false,
           requirement: (logs) => logs.filter(l => l.completed).length >= 1,
         },
@@ -43,7 +45,7 @@ export const AchievementBadges: React.FC = () => {
           icon: Zap,
           title: 'კვირის მეომარი',
           description: '7 დღე ზედიზედ',
-          color: '#00ff41',
+          color: colors.primary,
           unlocked: false,
           requirement: (logs) => getStreak(logs) >= 7,
         },
@@ -52,7 +54,7 @@ export const AchievementBadges: React.FC = () => {
           icon: Trophy,
           title: 'თვის ოსტატი',
           description: '30 დღე ზედიზედ',
-          color: '#ff6b6b',
+          color: colors.red,
           unlocked: false,
           requirement: (logs) => getStreak(logs) >= 30,
         },
@@ -61,7 +63,7 @@ export const AchievementBadges: React.FC = () => {
           icon: Flame,
           title: 'მიძღვნილი',
           description: '50 დღე შესრულებული',
-          color: '#ff4500',
+          color: colors.fireOrange,
           unlocked: false,
           requirement: (logs) => logs.filter(l => l.completed).length >= 50,
         },
@@ -70,7 +72,7 @@ export const AchievementBadges: React.FC = () => {
           icon: Award,
           title: 'სტო დღე',
           description: '100 დღე შესრულებული',
-          color: '#00bfff',
+          color: colors.blue,
           unlocked: false,
           requirement: (logs) => logs.filter(l => l.completed).length >= 100,
         },
@@ -79,12 +81,9 @@ export const AchievementBadges: React.FC = () => {
           icon: Target,
           title: 'სრულყოფილი თვე',
           description: 'ბოლო 30 დღე 100%',
-          color: '#9b59b6',
+          color: colors.purple,
           unlocked: false,
-          requirement: (logs) => {
-            const last30Days = getLast30DaysCompletion(logs);
-            return last30Days === 30;
-          },
+          requirement: (logs) => getLast30DaysCompletion(logs) === 30,
         },
       ];
 
@@ -99,47 +98,12 @@ export const AchievementBadges: React.FC = () => {
     }
   };
 
-  const getStreak = (logs: ActivityLog[]): number => {
-    const sortedLogs = [...logs]
-      .filter((log) => log.completed)
-      .sort((a, b) => b.timestamp - a.timestamp);
-
-    let streak = 0;
-    let currentDate = new Date();
-
-    for (const log of sortedLogs) {
-      const logDate = new Date(log.date);
-      const diffDays = Math.floor((currentDate.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (diffDays === streak) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-
-    return streak;
-  };
-
-  const getLast30DaysCompletion = (logs: ActivityLog[]): number => {
-    const last30Days = Array.from({ length: 30 }).map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (29 - i));
-      return date.toISOString().split('T')[0];
-    });
-
-    return last30Days.filter(date => {
-      const log = logs.find(l => l.date === date);
-      return log?.completed;
-    }).length;
-  };
-
   const unlockedCount = badges.filter(b => b.unlocked).length;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Award color="#ffd700" size={24} />
+        <Award color={colors.gold} size={24} />
         <Text style={styles.title}>მიღწევები ({unlockedCount}/{badges.length})</Text>
       </View>
 
@@ -152,12 +116,12 @@ export const AchievementBadges: React.FC = () => {
               style={[
                 styles.badge,
                 badge.unlocked && styles.badgeUnlocked,
-                { borderColor: badge.unlocked ? badge.color : '#333' },
+                { borderColor: badge.unlocked ? badge.color : colors.borderLight },
               ]}
             >
               <View style={[
                 styles.iconContainer,
-                { backgroundColor: badge.unlocked ? `${badge.color}20` : '#1a1a1a' }
+                { backgroundColor: badge.unlocked ? `${badge.color}20` : colors.surfaceLighter }
               ]}>
                 <Icon
                   color={badge.unlocked ? badge.color : '#555'}
@@ -166,7 +130,7 @@ export const AchievementBadges: React.FC = () => {
               </View>
               <Text style={[
                 styles.badgeTitle,
-                { color: badge.unlocked ? '#ffffff' : '#555' }
+                { color: badge.unlocked ? colors.textPrimary : '#555' }
               ]}>
                 {badge.title}
               </Text>
@@ -183,12 +147,12 @@ export const AchievementBadges: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0a0a0a',
-    borderRadius: 15,
-    padding: 20,
-    marginVertical: 15,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xxl,
+    padding: spacing.xxl,
+    marginVertical: spacing.card,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -196,9 +160,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 20,
-    color: '#ffd700',
+    color: colors.gold,
     marginLeft: 10,
   },
   badgeScroll: {
@@ -206,15 +170,15 @@ const styles = StyleSheet.create({
   },
   badge: {
     width: 120,
-    backgroundColor: '#0f0f0f',
-    borderRadius: 12,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.xl,
     padding: 15,
     marginHorizontal: 5,
     alignItems: 'center',
     borderWidth: 2,
   },
   badgeUnlocked: {
-    shadowColor: '#00ff41',
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
@@ -228,16 +192,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   badgeTitle: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 12,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 5,
   },
   badgeDescription: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 9,
-    color: '#888',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

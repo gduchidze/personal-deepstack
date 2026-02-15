@@ -5,6 +5,8 @@ import * as Haptics from 'expo-haptics';
 import { CheckCircle, Circle, TrendingUp } from 'lucide-react-native';
 import { ActivityLog } from '../types';
 import { formatDate } from '../utils/dateUtils';
+import { getStreak } from '../utils/streakCalculator';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LOGS_KEY = '@deepstack_logs';
 
@@ -55,38 +57,18 @@ export const ProgressLogger: React.FC = () => {
     }
   };
 
-  const getStreak = (): number => {
-    const sortedLogs = [...logs]
-      .filter((log) => log.completed)
-      .sort((a, b) => b.timestamp - a.timestamp);
-
-    let streak = 0;
-    let currentDate = new Date();
-
-    for (const log of sortedLogs) {
-      const logDate = new Date(log.date);
-      const diffDays = Math.floor((currentDate.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
-
-      if (diffDays === streak) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-
-    return streak;
-  };
+  const streak = getStreak(logs);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TrendingUp color="#ffa500" size={24} />
+        <TrendingUp color={colors.orange} size={24} />
         <Text style={styles.title}>პროგრესის ტრეკერი</Text>
       </View>
 
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
-          <Text style={styles.statValue}>{getStreak()}</Text>
+          <Text style={styles.statValue}>{streak}</Text>
           <Text style={styles.statLabel}>დღე ზედიზედ</Text>
         </View>
         <View style={styles.statBox}>
@@ -101,12 +83,12 @@ export const ProgressLogger: React.FC = () => {
         activeOpacity={0.7}
       >
         {todayCompleted ? (
-          <CheckCircle color="#00ff41" size={24} />
+          <CheckCircle color={colors.primary} size={24} />
         ) : (
-          <Circle color="#888" size={24} />
+          <Circle color={colors.textSecondary} size={24} />
         )}
         <Text style={styles.logButtonText}>
-          {todayCompleted ? 'დღე დასრულებულია ✓' : 'მონიშნე როგორც დასრულებული'}
+          {todayCompleted ? 'დღე დასრულებულია' : 'მონიშნე როგორც დასრულებული'}
         </Text>
       </TouchableOpacity>
 
@@ -136,12 +118,12 @@ export const ProgressLogger: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0a0a0a',
-    borderRadius: 15,
-    padding: 20,
-    marginVertical: 15,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xxl,
+    padding: spacing.xxl,
+    marginVertical: spacing.card,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -149,9 +131,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 20,
-    color: '#ffa500',
+    color: colors.orange,
     marginLeft: 10,
   },
   statsContainer: {
@@ -163,35 +145,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 32,
-    color: '#00ff41',
+    color: colors.primary,
   },
   statLabel: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 12,
-    color: '#888',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   logButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
+    backgroundColor: colors.surfaceLighter,
+    borderRadius: borderRadius.lg,
     padding: 15,
     marginBottom: 20,
     borderWidth: 2,
-    borderColor: '#333',
+    borderColor: colors.borderLight,
   },
   logButtonCompleted: {
-    borderColor: '#00ff41',
-    backgroundColor: '#0a2a0a',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryBg,
   },
   logButtonText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 16,
-    color: '#ffffff',
+    color: colors.textPrimary,
     marginLeft: 10,
   },
   heatmapContainer: {
@@ -204,13 +186,13 @@ const styles = StyleSheet.create({
   heatmapCell: {
     width: 30,
     height: 30,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 5,
+    backgroundColor: colors.surfaceLighter,
+    borderRadius: borderRadius.sm,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: colors.borderLight,
   },
   heatmapCellCompleted: {
-    backgroundColor: '#00ff41',
-    borderColor: '#00ff41',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
 });

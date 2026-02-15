@@ -5,7 +5,6 @@ import { DaySchedule } from '../types';
 import { getCurrentTime, getDayOfWeek } from '../utils/dateUtils';
 import { GlassMorphCard } from './GlassMorphCard';
 import { Clock } from 'lucide-react-native';
-import * as Animatable from 'react-native-animatable';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,6 +12,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Props {
   scheduleData: DaySchedule[];
@@ -30,7 +30,6 @@ export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
       findCurrentActivity(time);
     }, 1000);
 
-    // Pulse animation
     pulse.value = withRepeat(
       withSequence(
         withTiming(1.05, { duration: 1000 }),
@@ -70,11 +69,11 @@ export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
   });
 
   return (
-    <Animatable.View animation="fadeInUp" duration={800} style={styles.container}>
-      <GlassMorphCard glowColor="#00ff41" style={styles.card}>
+    <View style={styles.container}>
+      <GlassMorphCard glowColor={colors.primary} style={styles.card}>
         <View style={styles.header}>
           <Animated.View style={[styles.iconContainer, pulseStyle]}>
-            <Clock color="#00ff41" size={28} />
+            <Clock color={colors.primary} size={28} />
           </Animated.View>
           <Text style={styles.label}>ამჟამინდელი აქტივობა</Text>
         </View>
@@ -85,45 +84,20 @@ export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
           end={{ x: 1, y: 0 }}
           style={styles.glowBorder}
         >
-          <Animatable.Text
-            animation="pulse"
-            iterationCount="infinite"
-            duration={2000}
-            style={styles.timeText}
-          >
-            {currentTime}
-          </Animatable.Text>
+          <Text style={styles.timeText}>{currentTime}</Text>
 
           <View style={styles.activityContainer}>
             <Text style={styles.activityText}>{currentActivity}</Text>
           </View>
         </LinearGradient>
-
-        {/* Decorative Elements */}
-        <View style={styles.decorativeContainer}>
-          {[...Array(20)].map((_, i) => (
-            <Animatable.View
-              key={i}
-              animation="fadeIn"
-              delay={i * 100}
-              style={[
-                styles.decorativeDot,
-                {
-                  left: `${(i * 5) % 100}%`,
-                  top: i % 2 === 0 ? 0 : '100%',
-                },
-              ]}
-            />
-          ))}
-        </View>
       </GlassMorphCard>
-    </Animatable.View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 20,
+    marginVertical: spacing.card,
   },
   card: {},
   header: {
@@ -135,74 +109,58 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(0, 255, 65, 0.1)',
+    backgroundColor: colors.primaryDim,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
     borderWidth: 2,
-    borderColor: '#00ff41',
-    shadowColor: '#00ff41',
+    borderColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
   },
   label: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#888',
+    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 2,
   },
   glowBorder: {
-    borderRadius: 15,
+    borderRadius: borderRadius.xxl,
     padding: 25,
     borderWidth: 2,
-    borderColor: '#00ff41',
-    shadowColor: '#00ff41',
+    borderColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 15,
   },
   timeText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 42,
-    color: '#00ff41',
+    color: colors.primary,
     textAlign: 'center',
     marginBottom: 15,
     letterSpacing: 4,
     fontWeight: 'bold',
-    textShadowColor: '#00ff41',
+    textShadowColor: colors.primary,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 20,
   },
   activityContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 10,
+    borderRadius: borderRadius.lg,
     padding: 15,
     borderWidth: 1,
-    borderColor: 'rgba(0, 255, 65, 0.3)',
+    borderColor: colors.primaryBorder,
   },
   activityText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 18,
-    color: '#ffffff',
+    color: colors.textPrimary,
     textAlign: 'center',
     lineHeight: 26,
-  },
-  decorativeContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    pointerEvents: 'none',
-  },
-  decorativeDot: {
-    position: 'absolute',
-    width: 2,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: '#00ff41',
-    opacity: 0.3,
   },
 });

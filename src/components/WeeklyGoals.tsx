@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { CheckSquare, Square, BookOpen, Code2, Brain } from 'lucide-react-native';
 import { getCurrentWeek } from '../utils/dateUtils';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Goal {
   id: string;
@@ -28,7 +29,6 @@ export const WeeklyGoals: React.FC = () => {
       if (stored) {
         setGoals(JSON.parse(stored));
       } else {
-        // Initialize default goals for the week
         const defaultGoals: Goal[] = [
           { id: '1', title: 'კარპათის ვიდეო ნახე', category: 'theory', completed: false },
           { id: '2', title: '3+ პრაქტიკული ამოცანა', category: 'practice', completed: false },
@@ -68,13 +68,13 @@ export const WeeklyGoals: React.FC = () => {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'theory':
-        return <BookOpen color="#00bfff" size={16} />;
+        return <BookOpen color={colors.blue} size={16} />;
       case 'practice':
-        return <Code2 color="#ff6b6b" size={16} />;
+        return <Code2 color={colors.red} size={16} />;
       case 'dsa':
-        return <Brain color="#ffa500" size={16} />;
+        return <Brain color={colors.orange} size={16} />;
       default:
-        return <Square color="#888" size={16} />;
+        return <Square color={colors.textSecondary} size={16} />;
     }
   };
 
@@ -83,7 +83,7 @@ export const WeeklyGoals: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <CheckSquare color="#00ff41" size={24} />
+        <CheckSquare color={colors.primary} size={24} />
         <Text style={styles.title}>კვირის მიზნები - კვირა {currentWeek}</Text>
       </View>
 
@@ -102,9 +102,9 @@ export const WeeklyGoals: React.FC = () => {
           >
             <View style={styles.goalIcon}>
               {goal.completed ? (
-                <CheckSquare color="#00ff41" size={20} />
+                <CheckSquare color={colors.primary} size={20} />
               ) : (
-                <Square color="#888" size={20} />
+                <Square color={colors.textSecondary} size={20} />
               )}
             </View>
             <View style={styles.goalContent}>
@@ -124,12 +124,12 @@ export const WeeklyGoals: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0a0a0a',
-    borderRadius: 15,
-    padding: 20,
-    marginVertical: 15,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xxl,
+    padding: spacing.xxl,
+    marginVertical: spacing.card,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -137,15 +137,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 18,
-    color: '#00ff41',
+    color: colors.primary,
     marginLeft: 10,
   },
   progressBar: {
     height: 30,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 8,
+    backgroundColor: colors.surfaceLighter,
+    borderRadius: borderRadius.md,
     overflow: 'hidden',
     marginBottom: 20,
     justifyContent: 'center',
@@ -155,13 +155,13 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: '#00ff41',
+    backgroundColor: colors.primary,
     opacity: 0.3,
   },
   progressText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.textPrimary,
     textAlign: 'center',
     zIndex: 1,
   },
@@ -171,15 +171,15 @@ const styles = StyleSheet.create({
   goalItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0f0f0f',
-    borderRadius: 10,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.lg,
     padding: 15,
     borderWidth: 2,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   goalItemCompleted: {
-    borderColor: '#00ff41',
-    backgroundColor: '#0a2a0a',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryBg,
   },
   goalIcon: {
     marginRight: 12,
@@ -188,12 +188,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   goalTitle: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.textPrimary,
   },
   goalTitleCompleted: {
-    color: '#888',
+    color: colors.textSecondary,
     textDecorationLine: 'line-through',
   },
   categoryIcon: {

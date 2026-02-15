@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { colors, borderRadius } from '../theme';
 
 interface Props {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ export const GlassMorphCard: React.FC<Props> = ({
   children,
   style,
   intensity = 20,
-  glowColor = '#00ff41',
+  glowColor = colors.primary,
 }) => {
   return (
     <View style={[styles.container, style]}>
@@ -55,7 +56,7 @@ export const GlassMorphCard: React.FC<Props> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    borderRadius: 20,
+    borderRadius: borderRadius.round,
     overflow: 'hidden',
   },
   glow: {
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     left: -10,
     right: -10,
     bottom: -10,
-    borderRadius: 25,
+    borderRadius: borderRadius.full,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   blur: {
     overflow: 'hidden',
-    borderRadius: 20,
+    borderRadius: borderRadius.round,
   },
   gradient: {
     padding: 20,
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    borderRadius: 20,
+    borderRadius: borderRadius.round,
     borderWidth: 1,
     borderColor: 'transparent',
   },

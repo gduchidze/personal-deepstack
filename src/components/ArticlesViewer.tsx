@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { BookOpen, ArrowLeft, FileText, Calendar } from 'lucide-react-native';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 // Import markdown files as strings
 const articles = {
@@ -70,7 +71,7 @@ export const ArticlesViewer: React.FC = () => {
           }}
           activeOpacity={0.7}
         >
-          <ArrowLeft color="#00ff41" size={20} />
+          <ArrowLeft color={colors.primary} size={20} />
           <Text style={styles.backButtonText}>უკან</Text>
         </TouchableOpacity>
 
@@ -78,7 +79,7 @@ export const ArticlesViewer: React.FC = () => {
           <Text style={styles.articleCategory}>{selectedArticle.category}</Text>
           <Text style={styles.articleTitle}>{selectedArticle.title}</Text>
           <View style={styles.articleMeta}>
-            <Calendar color="#888" size={14} />
+            <Calendar color={colors.textSecondary} size={14} />
             <Text style={styles.articleDate}>{selectedArticle.date}</Text>
           </View>
         </View>
@@ -95,7 +96,7 @@ export const ArticlesViewer: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <BookOpen color="#ffa500" size={24} />
+        <BookOpen color={colors.orange} size={24} />
         <Text style={styles.title}>ჩემი სტატიები</Text>
       </View>
 
@@ -112,13 +113,13 @@ export const ArticlesViewer: React.FC = () => {
             activeOpacity={0.7}
           >
             <View style={styles.articleIcon}>
-              <FileText color="#00bfff" size={24} />
+              <FileText color={colors.blue} size={24} />
             </View>
             <View style={styles.articleInfo}>
               <Text style={styles.articleCardCategory}>{article.category}</Text>
               <Text style={styles.articleCardTitle}>{article.title}</Text>
               <View style={styles.articleCardMeta}>
-                <Calendar color="#888" size={12} />
+                <Calendar color={colors.textSecondary} size={12} />
                 <Text style={styles.articleCardDate}>{article.date}</Text>
               </View>
             </View>
@@ -148,15 +149,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 24,
-    color: '#ffa500',
+    color: colors.orange,
     marginLeft: 12,
   },
   subtitle: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 13,
-    color: '#888',
+    color: colors.textSecondary,
     marginBottom: 25,
   },
   articlesList: {
@@ -164,17 +165,17 @@ const styles = StyleSheet.create({
   },
   articleCard: {
     flexDirection: 'row',
-    backgroundColor: '#0a0a0a',
-    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xl,
     padding: 15,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   articleIcon: {
     width: 50,
     height: 50,
-    borderRadius: 25,
-    backgroundColor: '#0f0f0f',
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.surfaceLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
@@ -183,16 +184,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   articleCardCategory: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 11,
-    color: '#00bfff',
+    color: colors.blue,
     marginBottom: 5,
     textTransform: 'uppercase',
   },
   articleCardTitle: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.textPrimary,
     marginBottom: 8,
     lineHeight: 20,
   },
@@ -202,41 +203,41 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   articleCardDate: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 11,
-    color: '#888',
+    color: colors.textSecondary,
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0a0a0a',
-    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
     padding: 12,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
     alignSelf: 'flex-start',
   },
   backButtonText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#00ff41',
+    color: colors.primary,
     marginLeft: 8,
   },
   articleHeader: {
     marginBottom: 20,
   },
   articleCategory: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 12,
-    color: '#00bfff',
+    color: colors.blue,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
   articleTitle: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 20,
-    color: '#ffffff',
+    color: colors.textPrimary,
     marginBottom: 10,
     lineHeight: 28,
   },
@@ -246,9 +247,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   articleDate: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 12,
-    color: '#888',
+    color: colors.textSecondary,
   },
   articleContent: {
     flex: 1,
@@ -257,99 +258,99 @@ const styles = StyleSheet.create({
     marginTop: 30,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#1a1a1a',
+    borderTopColor: colors.border,
     alignItems: 'center',
   },
   footerText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#00ff41',
+    color: colors.primary,
     marginBottom: 5,
   },
   footerSubtext: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 11,
-    color: '#888',
+    color: colors.textSecondary,
   },
 });
 
 const markdownStyles = StyleSheet.create({
   body: {
-    fontFamily: 'monospace',
-    color: '#ffffff',
+    fontFamily: typography.fontFamily,
+    color: colors.textPrimary,
     fontSize: 14,
     lineHeight: 22,
   },
   heading1: {
-    fontFamily: 'monospace',
-    color: '#00ff41',
+    fontFamily: typography.fontFamily,
+    color: colors.primary,
     fontSize: 24,
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 15,
   },
   heading2: {
-    fontFamily: 'monospace',
-    color: '#00bfff',
+    fontFamily: typography.fontFamily,
+    color: colors.blue,
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 18,
     marginBottom: 12,
   },
   heading3: {
-    fontFamily: 'monospace',
-    color: '#ffa500',
+    fontFamily: typography.fontFamily,
+    color: colors.orange,
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 15,
     marginBottom: 10,
   },
   paragraph: {
-    fontFamily: 'monospace',
-    color: '#cccccc',
+    fontFamily: typography.fontFamily,
+    color: colors.textBody,
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 12,
   },
   listItem: {
-    fontFamily: 'monospace',
-    color: '#cccccc',
+    fontFamily: typography.fontFamily,
+    color: colors.textBody,
     fontSize: 14,
     lineHeight: 22,
   },
   code_inline: {
-    fontFamily: 'monospace',
-    backgroundColor: '#1a1a1a',
-    color: '#00ff41',
+    fontFamily: typography.fontFamily,
+    backgroundColor: colors.surfaceLighter,
+    color: colors.primary,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   code_block: {
-    fontFamily: 'monospace',
-    backgroundColor: '#0a0a0a',
-    color: '#00ff41',
+    fontFamily: typography.fontFamily,
+    backgroundColor: colors.surface,
+    color: colors.primary,
     padding: 15,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   fence: {
-    fontFamily: 'monospace',
-    backgroundColor: '#0a0a0a',
-    color: '#00ff41',
+    fontFamily: typography.fontFamily,
+    backgroundColor: colors.surface,
+    color: colors.primary,
     padding: 15,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   blockquote: {
-    fontFamily: 'monospace',
-    backgroundColor: '#0f0f0f',
+    fontFamily: typography.fontFamily,
+    backgroundColor: colors.surfaceLight,
     borderLeftWidth: 4,
-    borderLeftColor: '#00bfff',
+    borderLeftColor: colors.blue,
     paddingLeft: 15,
     paddingVertical: 10,
     marginVertical: 10,
@@ -357,20 +358,20 @@ const markdownStyles = StyleSheet.create({
     color: '#aaaaaa',
   },
   link: {
-    color: '#00bfff',
+    color: colors.blue,
     textDecorationLine: 'underline',
   },
   hr: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.border,
     height: 1,
     marginVertical: 20,
   },
   strong: {
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: colors.textPrimary,
   },
   em: {
     fontStyle: 'italic',
-    color: '#cccccc',
+    color: colors.textBody,
   },
 });

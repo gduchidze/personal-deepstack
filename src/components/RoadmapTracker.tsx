@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { RoadmapWeek } from '../types';
 import { getCurrentWeek, getProgress } from '../utils/dateUtils';
 import { Target, BookOpen, Code } from 'lucide-react-native';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Props {
   weekData: RoadmapWeek[];
@@ -22,7 +23,7 @@ export const RoadmapTracker: React.FC<Props> = ({ weekData }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Target color="#00ff41" size={24} />
+        <Target color={colors.primary} size={24} />
         <Text style={styles.title}>როუდმაპი - კვირა {currentWeek}/65</Text>
       </View>
 
@@ -30,7 +31,7 @@ export const RoadmapTracker: React.FC<Props> = ({ weekData }) => {
       <View style={styles.progressContainer}>
         <View style={styles.progressBarBackground}>
           <LinearGradient
-            colors={['#00ff41', '#00cc33']}
+            colors={[colors.primary, '#00cc33']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={[styles.progressBarFill, { width: `${progress}%` }]}
@@ -42,7 +43,7 @@ export const RoadmapTracker: React.FC<Props> = ({ weekData }) => {
       {/* Today's Topic */}
       <View style={styles.topicContainer}>
         <View style={styles.topicHeader}>
-          <BookOpen color="#00bfff" size={20} />
+          <BookOpen color={colors.blue} size={20} />
           <Text style={styles.topicTitle}>დღევანდელი დავალება</Text>
         </View>
         <Text style={styles.topicText}>{todaysTopic}</Text>
@@ -53,7 +54,7 @@ export const RoadmapTracker: React.FC<Props> = ({ weekData }) => {
         {currentWeekData.map((item, index) => (
           <View key={index} style={styles.weekItem}>
             <View style={styles.weekItemHeader}>
-              <Code color="#ff6b6b" size={16} />
+              <Code color={colors.red} size={16} />
               <Text style={styles.weekItemDay}>{item.day} - {item.timeBlock}</Text>
             </View>
             <Text style={styles.weekItemTopic}>{item.topic}</Text>
@@ -69,12 +70,12 @@ export const RoadmapTracker: React.FC<Props> = ({ weekData }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0a0a0a',
-    borderRadius: 15,
-    padding: 20,
-    marginVertical: 15,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xxl,
+    padding: spacing.xxl,
+    marginVertical: spacing.card,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -82,9 +83,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 20,
-    color: '#00ff41',
+    color: colors.primary,
     marginLeft: 10,
   },
   progressContainer: {
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
   },
   progressBarBackground: {
     height: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.surfaceLighter,
     borderRadius: 6,
     overflow: 'hidden',
   },
@@ -101,19 +102,19 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   progressText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#888',
+    color: colors.textSecondary,
     marginTop: 8,
     textAlign: 'center',
   },
   topicContainer: {
-    backgroundColor: '#0f0f0f',
-    borderRadius: 10,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.lg,
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#00bfff',
+    borderColor: colors.blue,
   },
   topicHeader: {
     flexDirection: 'row',
@@ -121,27 +122,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   topicTitle: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 16,
-    color: '#00bfff',
+    color: colors.blue,
     marginLeft: 8,
   },
   topicText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.textPrimary,
     lineHeight: 20,
   },
   weekDetails: {
     maxHeight: 250,
   },
   weekItem: {
-    backgroundColor: '#0f0f0f',
-    borderRadius: 8,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.md,
     padding: 12,
     marginBottom: 10,
     borderLeftWidth: 3,
-    borderLeftColor: '#ff6b6b',
+    borderLeftColor: colors.red,
   },
   weekItemHeader: {
     flexDirection: 'row',
@@ -149,20 +150,20 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   weekItemDay: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 12,
-    color: '#ff6b6b',
+    color: colors.red,
     marginLeft: 6,
   },
   weekItemTopic: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 13,
-    color: '#ffffff',
+    color: colors.textPrimary,
     marginBottom: 5,
   },
   weekItemDSA: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 11,
-    color: '#888',
+    color: colors.textSecondary,
   },
 });

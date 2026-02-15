@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Clock } from 'lucide-react-native';
 import { DaySchedule } from '../types';
 import { getDayOfWeek, getDayOfWeekGeorgian } from '../utils/dateUtils';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Props {
   scheduleData: DaySchedule[];
@@ -15,7 +16,7 @@ export const DailySchedule: React.FC<Props> = ({ scheduleData }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Clock color="#ff6b6b" size={24} />
+        <Clock color={colors.red} size={24} />
         <Text style={styles.title}>{dayOfWeekGeorgian} - განრიგი</Text>
       </View>
 
@@ -40,12 +41,12 @@ export const DailySchedule: React.FC<Props> = ({ scheduleData }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0a0a0a',
-    borderRadius: 15,
-    padding: 20,
-    marginVertical: 15,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.xxl,
+    padding: spacing.xxl,
+    marginVertical: spacing.card,
     borderWidth: 1,
-    borderColor: '#1a1a1a',
+    borderColor: colors.border,
   },
   header: {
     flexDirection: 'row',
@@ -53,9 +54,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 20,
-    color: '#ff6b6b',
+    color: colors.red,
     marginLeft: 10,
   },
   scheduleList: {
@@ -67,24 +68,24 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1a1a1a',
+    borderBottomColor: colors.border,
   },
   timeText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#00ff41',
+    color: colors.primary,
     width: 60,
   },
   activityContainer: {
     flex: 1,
-    backgroundColor: '#0f0f0f',
-    borderRadius: 8,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.md,
     padding: 10,
     marginLeft: 10,
   },
   activityText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.textPrimary,
   },
 });

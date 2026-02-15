@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { Settings, Bell, Volume2, Vibrate, Trash2 } from 'lucide-react-native';
 import { scheduleNotifications } from '../utils/notifications';
 import * as Notifications from 'expo-notifications';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 const SETTINGS_KEY = '@deepstack_settings';
 
@@ -20,7 +21,6 @@ export const SettingsPanel: React.FC = () => {
     soundEnabled: true,
     hapticsEnabled: true,
   });
-  const [expanded, setExpanded] = useState(false);
 
   const loadSettings = async () => {
     try {
@@ -76,130 +76,123 @@ export const SettingsPanel: React.FC = () => {
   };
 
   const clearAllData = async () => {
-    if (settings.hapticsEnabled) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    }
-
-    try {
-      await AsyncStorage.clear();
-      alert('ყველა მონაცემი წაიშალა! აპლიკაცია გადაიტვირთება.');
-    } catch (error) {
-      console.error('Error clearing data:', error);
-    }
+    Alert.alert(
+      'მონაცემების წაშლა',
+      'ნამდვილად გსურთ ყველა მონაცემის წაშლა? ეს მოქმედება შეუქცევადია.',
+      [
+        { text: 'გაუქმება', style: 'cancel' },
+        {
+          text: 'წაშლა',
+          style: 'destructive',
+          onPress: async () => {
+            if (settings.hapticsEnabled) {
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            }
+            try {
+              await AsyncStorage.clear();
+              alert('ყველა მონაცემი წაიშალა! აპლიკაცია გადაიტვირთება.');
+            } catch (error) {
+              console.error('Error clearing data:', error);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.header}
-        onPress={() => setExpanded(!expanded)}
-        activeOpacity={0.7}
-      >
-        <Settings color="#9b59b6" size={24} />
+      <View style={styles.header}>
+        <Settings color={colors.purple} size={24} />
         <Text style={styles.title}>პარამეტრები</Text>
-        <Text style={styles.expandIcon}>{expanded ? '▼' : '▶'}</Text>
-      </TouchableOpacity>
+      </View>
 
-      {expanded && (
-        <View style={styles.content}>
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Bell color="#00bfff" size={20} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingLabel}>შეტყობინებები</Text>
-                <Text style={styles.settingDescription}>განრიგის ალერტები</Text>
-              </View>
+      <View style={styles.content}>
+        <View style={styles.settingRow}>
+          <View style={styles.settingInfo}>
+            <Bell color={colors.blue} size={20} />
+            <View style={styles.settingText}>
+              <Text style={styles.settingLabel}>შეტყობინებები</Text>
+              <Text style={styles.settingDescription}>განრიგის ალერტები</Text>
             </View>
-            <Switch
-              value={settings.notificationsEnabled}
-              onValueChange={toggleNotifications}
-              trackColor={{ false: '#333', true: '#00ff4180' }}
-              thumbColor={settings.notificationsEnabled ? '#00ff41' : '#888'}
-            />
           </View>
-
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Volume2 color="#ffa500" size={20} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingLabel}>ხმა</Text>
-                <Text style={styles.settingDescription}>შეტყობინების ხმა</Text>
-              </View>
-            </View>
-            <Switch
-              value={settings.soundEnabled}
-              onValueChange={toggleSound}
-              trackColor={{ false: '#333', true: '#ffa50080' }}
-              thumbColor={settings.soundEnabled ? '#ffa500' : '#888'}
-            />
-          </View>
-
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Vibrate color="#ff6b6b" size={20} />
-              <View style={styles.settingText}>
-                <Text style={styles.settingLabel}>ვიბრაცია</Text>
-                <Text style={styles.settingDescription}>ჰაპტიკური უკუკავშირი</Text>
-              </View>
-            </View>
-            <Switch
-              value={settings.hapticsEnabled}
-              onValueChange={toggleHaptics}
-              trackColor={{ false: '#333', true: '#ff6b6b80' }}
-              thumbColor={settings.hapticsEnabled ? '#ff6b6b' : '#888'}
-            />
-          </View>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity
-            style={styles.dangerButton}
-            onPress={clearAllData}
-            activeOpacity={0.7}
-          >
-            <Trash2 color="#ff4444" size={20} />
-            <Text style={styles.dangerButtonText}>მონაცემების წაშლა</Text>
-          </TouchableOpacity>
+          <Switch
+            value={settings.notificationsEnabled}
+            onValueChange={toggleNotifications}
+            trackColor={{ false: colors.borderLight, true: '#00ff4180' }}
+            thumbColor={settings.notificationsEnabled ? colors.primary : colors.textSecondary}
+          />
         </View>
-      )}
+
+        <View style={styles.settingRow}>
+          <View style={styles.settingInfo}>
+            <Volume2 color={colors.orange} size={20} />
+            <View style={styles.settingText}>
+              <Text style={styles.settingLabel}>ხმა</Text>
+              <Text style={styles.settingDescription}>შეტყობინების ხმა</Text>
+            </View>
+          </View>
+          <Switch
+            value={settings.soundEnabled}
+            onValueChange={toggleSound}
+            trackColor={{ false: colors.borderLight, true: '#ffa50080' }}
+            thumbColor={settings.soundEnabled ? colors.orange : colors.textSecondary}
+          />
+        </View>
+
+        <View style={styles.settingRow}>
+          <View style={styles.settingInfo}>
+            <Vibrate color={colors.red} size={20} />
+            <View style={styles.settingText}>
+              <Text style={styles.settingLabel}>ვიბრაცია</Text>
+              <Text style={styles.settingDescription}>ჰაპტიკური უკუკავშირი</Text>
+            </View>
+          </View>
+          <Switch
+            value={settings.hapticsEnabled}
+            onValueChange={toggleHaptics}
+            trackColor={{ false: colors.borderLight, true: '#ff6b6b80' }}
+            thumbColor={settings.hapticsEnabled ? colors.red : colors.textSecondary}
+          />
+        </View>
+
+        <View style={styles.divider} />
+
+        <TouchableOpacity
+          style={styles.dangerButton}
+          onPress={clearAllData}
+          activeOpacity={0.7}
+        >
+          <Trash2 color={colors.danger} size={20} />
+          <Text style={styles.dangerButtonText}>მონაცემების წაშლა</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0a0a0a',
-    borderRadius: 15,
-    padding: 20,
-    marginVertical: 15,
-    borderWidth: 1,
-    borderColor: '#1a1a1a',
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 20,
   },
   title: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 20,
-    color: '#9b59b6',
+    color: colors.purple,
     marginLeft: 10,
-    flex: 1,
   },
-  expandIcon: {
-    fontFamily: 'monospace',
-    fontSize: 16,
-    color: '#888',
-  },
-  content: {
-    marginTop: 20,
-  },
+  content: {},
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#0f0f0f',
-    borderRadius: 10,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.lg,
     padding: 15,
     marginBottom: 10,
   },
@@ -212,35 +205,35 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   settingLabel: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ffffff',
+    color: colors.textPrimary,
     marginBottom: 2,
   },
   settingDescription: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 11,
-    color: '#888',
+    color: colors.textSecondary,
   },
   divider: {
     height: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.border,
     marginVertical: 15,
   },
   dangerButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2a0a0a',
-    borderRadius: 10,
+    backgroundColor: colors.dangerBg,
+    borderRadius: borderRadius.lg,
     padding: 15,
     borderWidth: 2,
-    borderColor: '#ff4444',
+    borderColor: colors.danger,
   },
   dangerButtonText: {
-    fontFamily: 'monospace',
+    fontFamily: typography.fontFamily,
     fontSize: 14,
-    color: '#ff4444',
+    color: colors.danger,
     marginLeft: 10,
   },
 });
