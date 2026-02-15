@@ -20,6 +20,7 @@ import { AchievementBadges } from './src/components/AchievementBadges';
 import { WeeklyGoals } from './src/components/WeeklyGoals';
 import { StatsPanel } from './src/components/StatsPanel';
 import { SettingsPanel } from './src/components/SettingsPanel';
+import { ArticlesViewer } from './src/components/ArticlesViewer';
 import { DaySchedule, RoadmapWeek } from './src/types';
 import { Terminal, Home, BarChart3, BookOpen } from 'lucide-react-native';
 
@@ -89,13 +90,7 @@ export default function App() {
           </>
         );
       case 'articles':
-        return (
-          <View style={styles.comingSoon}>
-            <BookOpen color="#00bfff" size={64} />
-            <Text style={styles.comingSoonText}>სტატიები</Text>
-            <Text style={styles.comingSoonSubtext}>მალე დაემატება...</Text>
-          </View>
-        );
+        return <ArticlesViewer />;
       default:
         return null;
     }
