@@ -18,12 +18,16 @@ interface Badge {
   requirement: (logs: ActivityLog[]) => boolean;
 }
 
-export const AchievementBadges: React.FC = () => {
+interface Props {
+  refreshKey?: number;
+}
+
+export const AchievementBadges: React.FC<Props> = ({ refreshKey }) => {
   const [badges, setBadges] = useState<Badge[]>([]);
 
   useEffect(() => {
     checkBadges();
-  }, []);
+  }, [refreshKey]);
 
   const checkBadges = async () => {
     try {

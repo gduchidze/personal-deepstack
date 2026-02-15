@@ -1,12 +1,5 @@
-import React, { useEffect } from 'react';
-import { Text, TextStyle } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedProps,
-  withSpring,
-} from 'react-native-reanimated';
-
-const AnimatedText = Animated.createAnimatedComponent(Text);
+import React, { useEffect, useRef, useState } from 'react';
+import { Text, TextStyle, Animated } from 'react-native';
 
 interface Props {
   value: number;
@@ -14,26 +7,32 @@ interface Props {
   duration?: number;
 }
 
-export const AnimatedCounter: React.FC<Props> = ({ value, style, duration = 1000 }) => {
-  const animatedValue = useSharedValue(0);
+export const AnimatedCounter: React.FC<Props> = ({ value, style, duration = 800 }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  const prevValue = useRef(0);
 
   useEffect(() => {
-    animatedValue.value = withSpring(value, {
-      damping: 15,
-      stiffness: 100,
+    const from = prevValue.current;
+    prevValue.current = value;
+
+    animatedValue.setValue(0);
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration,
+      useNativeDriver: false,
+    }).start();
+
+    const listener = animatedValue.addListener(({ value: progress }) => {
+      setDisplayValue(Math.round(from + (value - from) * progress));
     });
+
+    return () => {
+      animatedValue.removeListener(listener);
+    };
   }, [value]);
 
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      text: Math.round(animatedValue.value).toString(),
-    };
-  });
-
   return (
-    <AnimatedText
-      style={style}
-      animatedProps={animatedProps as any}
-    />
+    <Text style={style}>{displayValue}</Text>
   );
 };

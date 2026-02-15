@@ -24,11 +24,14 @@ import { EnhancedStatsPanel } from './src/components/EnhancedStatsPanel';
 import { SettingsPanel } from './src/components/SettingsPanel';
 import { ArticlesViewer } from './src/components/ArticlesViewer';
 import { QuickDayLog } from './src/components/QuickDayLog';
+import { CountdownBanner } from './src/components/CountdownBanner';
+import { FocusTimer } from './src/components/FocusTimer';
+import { DailyNotes } from './src/components/DailyNotes';
 import { DaySchedule, RoadmapWeek } from './src/types';
-import { Terminal, Home, BarChart3, BookOpen, Settings, X } from 'lucide-react-native';
+import { Terminal, Home, BarChart3, BookOpen, Settings, X, Timer } from 'lucide-react-native';
 import { colors, spacing, borderRadius, typography } from './src/theme';
 
-type TabType = 'home' | 'stats' | 'articles';
+type TabType = 'home' | 'stats' | 'focus' | 'articles';
 
 export default function App() {
   const [scheduleData, setScheduleData] = useState<DaySchedule[]>([]);
@@ -37,6 +40,7 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     initializeApp();
@@ -65,12 +69,24 @@ export default function App() {
       const data = await parseXLSXData(require('./assets/AI_Engineer_15Month_Roadmap.xlsx'));
       setScheduleData(data.scheduleData);
       setWeekData(data.weekData);
+      setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error('Refresh error:', error);
     } finally {
       setRefreshing(false);
     }
   }, []);
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    // Trigger data refresh when switching tabs so components reload
+    setRefreshKey(prev => prev + 1);
+  };
+
+  const handleDataChange = () => {
+    // When data changes in one component, trigger refresh in others
+    setRefreshKey(prev => prev + 1);
+  };
 
   if (loading) {
     return (
@@ -90,19 +106,27 @@ export default function App() {
       case 'home':
         return (
           <>
+            <CountdownBanner />
             <EnhancedCurrentActivity scheduleData={scheduleData} />
-            <QuickDayLog />
-            <WeeklyGoals />
+            <QuickDayLog refreshKey={refreshKey} onDataChange={handleDataChange} />
+            <WeeklyGoals refreshKey={refreshKey} />
             <RoadmapTracker weekData={weekData} />
           </>
         );
       case 'stats':
         return (
           <>
-            <EnhancedStatsPanel />
-            <ProgressLogger />
-            <AchievementBadges />
+            <EnhancedStatsPanel refreshKey={refreshKey} />
+            <ProgressLogger refreshKey={refreshKey} onDataChange={handleDataChange} />
+            <AchievementBadges refreshKey={refreshKey} />
             <DailySchedule scheduleData={scheduleData} />
+          </>
+        );
+      case 'focus':
+        return (
+          <>
+            <FocusTimer />
+            <DailyNotes refreshKey={refreshKey} />
           </>
         );
       case 'articles':
@@ -152,7 +176,7 @@ export default function App() {
           {/* Footer */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>Built with precision & discipline</Text>
-            <Text style={styles.footerVersion}>v4.0.0 | DeepStack Protocol Engine</Text>
+            <Text style={styles.footerVersion}>v5.0.0 | DeepStack Protocol Engine</Text>
           </View>
         </ScrollView>
 
@@ -160,7 +184,7 @@ export default function App() {
         <View style={styles.tabBar}>
           <TouchableOpacity
             style={styles.tab}
-            onPress={() => setActiveTab('home')}
+            onPress={() => handleTabChange('home')}
             activeOpacity={0.7}
           >
             <Home color={activeTab === 'home' ? colors.primary : colors.textSecondary} size={22} />
@@ -172,7 +196,7 @@ export default function App() {
 
           <TouchableOpacity
             style={styles.tab}
-            onPress={() => setActiveTab('stats')}
+            onPress={() => handleTabChange('stats')}
             activeOpacity={0.7}
           >
             <BarChart3 color={activeTab === 'stats' ? colors.blue : colors.textSecondary} size={22} />
@@ -184,14 +208,26 @@ export default function App() {
 
           <TouchableOpacity
             style={styles.tab}
-            onPress={() => setActiveTab('articles')}
+            onPress={() => handleTabChange('focus')}
             activeOpacity={0.7}
           >
-            <BookOpen color={activeTab === 'articles' ? colors.orange : colors.textSecondary} size={22} />
-            <Text style={[styles.tabText, activeTab === 'articles' && styles.tabTextActiveOrange]}>
+            <Timer color={activeTab === 'focus' ? colors.orange : colors.textSecondary} size={22} />
+            <Text style={[styles.tabText, activeTab === 'focus' && styles.tabTextActiveOrange]}>
+              ფოკუსი
+            </Text>
+            {activeTab === 'focus' && <View style={[styles.tabIndicator, styles.tabIndicatorOrange]} />}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => handleTabChange('articles')}
+            activeOpacity={0.7}
+          >
+            <BookOpen color={activeTab === 'articles' ? colors.purple : colors.textSecondary} size={22} />
+            <Text style={[styles.tabText, activeTab === 'articles' && styles.tabTextActivePurple]}>
               სტატიები
             </Text>
-            {activeTab === 'articles' && <View style={[styles.tabIndicator, styles.tabIndicatorOrange]} />}
+            {activeTab === 'articles' && <View style={[styles.tabIndicator, styles.tabIndicatorPurple]} />}
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -321,7 +357,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontFamily: typography.fontFamily,
-    fontSize: 11,
+    fontSize: 10,
     color: colors.textSecondary,
   },
   tabTextActive: {
@@ -332,6 +368,9 @@ const styles = StyleSheet.create({
   },
   tabTextActiveOrange: {
     color: colors.orange,
+  },
+  tabTextActivePurple: {
+    color: colors.purple,
   },
   tabIndicator: {
     width: 6,
@@ -345,6 +384,9 @@ const styles = StyleSheet.create({
   },
   tabIndicatorOrange: {
     backgroundColor: colors.orange,
+  },
+  tabIndicatorPurple: {
+    backgroundColor: colors.purple,
   },
   // Settings Modal
   modalOverlay: {

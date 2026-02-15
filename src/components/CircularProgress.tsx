@@ -1,14 +1,6 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import Animated, {
-  useSharedValue,
-  useAnimatedProps,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface Props {
   progress: number; // 0-100
@@ -29,24 +21,31 @@ export const CircularProgress: React.FC<Props> = ({
   showPercentage = true,
   label = '',
 }) => {
-  const animatedProgress = useSharedValue(0);
+  const animatedProgress = useRef(new Animated.Value(0)).current;
+  const [strokeDashoffset, setStrokeDashoffset] = React.useState(0);
 
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
   useEffect(() => {
-    animatedProgress.value = withTiming(progress, {
-      duration: 1500,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-  }, [progress]);
+    setStrokeDashoffset(circumference);
 
-  const animatedProps = useAnimatedProps(() => {
-    const strokeDashoffset = circumference - (circumference * animatedProgress.value) / 100;
-    return {
-      strokeDashoffset,
+    animatedProgress.setValue(0);
+    Animated.timing(animatedProgress, {
+      toValue: progress,
+      duration: 1500,
+      useNativeDriver: false,
+    }).start();
+
+    const listener = animatedProgress.addListener(({ value }) => {
+      const offset = circumference - (circumference * value) / 100;
+      setStrokeDashoffset(offset);
+    });
+
+    return () => {
+      animatedProgress.removeListener(listener);
     };
-  });
+  }, [progress]);
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
@@ -61,7 +60,7 @@ export const CircularProgress: React.FC<Props> = ({
           fill="none"
         />
         {/* Progress Circle */}
-        <AnimatedCircle
+        <Circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -69,7 +68,7 @@ export const CircularProgress: React.FC<Props> = ({
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
-          animatedProps={animatedProps}
+          strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           rotation="-90"
           origin={`${size / 2}, ${size / 2}`}

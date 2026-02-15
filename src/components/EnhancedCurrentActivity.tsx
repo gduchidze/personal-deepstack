@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DaySchedule } from '../types';
-import { getCurrentTime, getDayOfWeek } from '../utils/dateUtils';
+import { getCurrentTime, getDayOfWeek, isProgramActive } from '../utils/dateUtils';
 import { GlassMorphCard } from './GlassMorphCard';
 import { Clock } from 'lucide-react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
 import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Props {
@@ -21,7 +14,7 @@ interface Props {
 export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
   const [currentActivity, setCurrentActivity] = useState<string>('');
-  const pulse = useSharedValue(1);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,16 +23,27 @@ export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
       findCurrentActivity(time);
     }, 1000);
 
-    pulse.value = withRepeat(
-      withSequence(
-        withTiming(1.05, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
-      -1,
-      false
+    // Pulse animation using built-in Animated API
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
     );
+    pulse.start();
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      pulse.stop();
+    };
   }, [scheduleData]);
 
   const findCurrentActivity = (time: string) => {
@@ -62,17 +66,13 @@ export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
     }
   };
 
-  const pulseStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: pulse.value }],
-    };
-  });
+  const programActive = isProgramActive();
 
   return (
     <View style={styles.container}>
       <GlassMorphCard glowColor={colors.primary} style={styles.card}>
         <View style={styles.header}>
-          <Animated.View style={[styles.iconContainer, pulseStyle]}>
+          <Animated.View style={[styles.iconContainer, { transform: [{ scale: pulseAnim }] }]}>
             <Clock color={colors.primary} size={28} />
           </Animated.View>
           <Text style={styles.label}>ამჟამინდელი აქტივობა</Text>
@@ -87,7 +87,9 @@ export const EnhancedCurrentActivity: React.FC<Props> = ({ scheduleData }) => {
           <Text style={styles.timeText}>{currentTime}</Text>
 
           <View style={styles.activityContainer}>
-            <Text style={styles.activityText}>{currentActivity}</Text>
+            <Text style={styles.activityText}>
+              {!programActive ? 'პროგრამა ხვალ იწყება' : currentActivity || 'თავისუფალი დრო'}
+            </Text>
           </View>
         </LinearGradient>
       </GlassMorphCard>

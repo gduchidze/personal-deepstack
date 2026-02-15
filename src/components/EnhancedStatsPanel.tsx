@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart3, Calendar, Zap, TrendingUp } from 'lucide-react-native';
 import { ActivityLog } from '../types';
-import { getDaysIntoProgram } from '../utils/dateUtils';
+import { getDaysIntoProgram, isProgramActive, getDaysUntilStart } from '../utils/dateUtils';
 import { getStreak, getLongestStreak } from '../utils/streakCalculator';
 import { CircularProgress } from './CircularProgress';
 import { GlassMorphCard } from './GlassMorphCard';
@@ -12,7 +12,11 @@ import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LOGS_KEY = '@deepstack_logs';
 
-export const EnhancedStatsPanel: React.FC = () => {
+interface Props {
+  refreshKey?: number;
+}
+
+export const EnhancedStatsPanel: React.FC<Props> = ({ refreshKey }) => {
   const [stats, setStats] = useState({
     totalDays: 0,
     completedDays: 0,
@@ -23,7 +27,7 @@ export const EnhancedStatsPanel: React.FC = () => {
 
   useEffect(() => {
     loadStats();
-  }, []);
+  }, [refreshKey]);
 
   const loadStats = async () => {
     try {
@@ -63,6 +67,9 @@ export const EnhancedStatsPanel: React.FC = () => {
     return Math.round((completed / 7) * 100);
   };
 
+  const programActive = isProgramActive();
+  const daysUntilStart = getDaysUntilStart();
+
   const completionRate = stats.totalDays > 0
     ? Math.round((stats.completedDays / stats.totalDays) * 100)
     : 0;
@@ -74,6 +81,14 @@ export const EnhancedStatsPanel: React.FC = () => {
           <BarChart3 color={colors.blue} size={24} />
           <Text style={styles.title}>სტატისტიკა</Text>
         </View>
+
+        {!programActive && (
+          <View style={styles.countdownBanner}>
+            <Text style={styles.countdownText}>
+              პროგრამა იწყება {daysUntilStart} დღეში
+            </Text>
+          </View>
+        )}
 
         <View style={styles.circularContainer}>
           <CircularProgress
@@ -147,6 +162,21 @@ const styles = StyleSheet.create({
     textShadowColor: colors.blue,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
+  },
+  countdownBanner: {
+    backgroundColor: 'rgba(0, 191, 255, 0.1)',
+    borderRadius: borderRadius.lg,
+    padding: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 191, 255, 0.3)',
+    alignItems: 'center',
+  },
+  countdownText: {
+    fontFamily: typography.fontFamily,
+    fontSize: 14,
+    color: colors.blue,
+    fontWeight: 'bold',
   },
   circularContainer: {
     flexDirection: 'row',

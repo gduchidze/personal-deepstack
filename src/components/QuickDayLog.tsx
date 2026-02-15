@@ -4,19 +4,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { CheckCircle, Circle, Flame } from 'lucide-react-native';
 import { ActivityLog } from '../types';
-import { formatDate } from '../utils/dateUtils';
+import { formatDate, isProgramActive } from '../utils/dateUtils';
 import { getStreak } from '../utils/streakCalculator';
 import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LOGS_KEY = '@deepstack_logs';
 
-export const QuickDayLog: React.FC = () => {
+interface Props {
+  refreshKey?: number;
+  onDataChange?: () => void;
+}
+
+export const QuickDayLog: React.FC<Props> = ({ refreshKey, onDataChange }) => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [todayCompleted, setTodayCompleted] = useState(false);
 
   useEffect(() => {
     loadLogs();
-  }, []);
+  }, [refreshKey]);
 
   const loadLogs = async () => {
     try {
@@ -50,12 +55,14 @@ export const QuickDayLog: React.FC = () => {
       await AsyncStorage.setItem(LOGS_KEY, JSON.stringify(updatedLogs));
       setLogs(updatedLogs);
       setTodayCompleted(!todayCompleted);
+      onDataChange?.();
     } catch (error) {
       console.error('Error saving log:', error);
     }
   };
 
   const streak = getStreak(logs);
+  const programActive = isProgramActive();
 
   return (
     <View style={styles.container}>
@@ -67,17 +74,26 @@ export const QuickDayLog: React.FC = () => {
         </View>
 
         <TouchableOpacity
-          style={[styles.button, todayCompleted && styles.buttonCompleted]}
+          style={[
+            styles.button,
+            todayCompleted && styles.buttonCompleted,
+            !programActive && styles.buttonDisabled,
+          ]}
           onPress={handleToggle}
           activeOpacity={0.7}
+          disabled={!programActive}
         >
           {todayCompleted ? (
             <CheckCircle color={colors.primary} size={22} />
           ) : (
-            <Circle color={colors.textSecondary} size={22} />
+            <Circle color={programActive ? colors.textSecondary : colors.textDark} size={22} />
           )}
-          <Text style={[styles.buttonText, todayCompleted && styles.buttonTextCompleted]}>
-            {todayCompleted ? 'დასრულებულია' : 'მონიშნე დღე'}
+          <Text style={[
+            styles.buttonText,
+            todayCompleted && styles.buttonTextCompleted,
+            !programActive && styles.buttonTextDisabled,
+          ]}>
+            {!programActive ? 'ხვალიდან იწყება' : todayCompleted ? 'დასრულებულია' : 'მონიშნე დღე'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -130,6 +146,9 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     backgroundColor: colors.primaryBg,
   },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
   buttonText: {
     fontFamily: typography.fontFamily,
     fontSize: 14,
@@ -137,5 +156,8 @@ const styles = StyleSheet.create({
   },
   buttonTextCompleted: {
     color: colors.primary,
+  },
+  buttonTextDisabled: {
+    color: colors.textDark,
   },
 });

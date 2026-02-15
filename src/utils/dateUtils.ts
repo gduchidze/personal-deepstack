@@ -4,14 +4,26 @@ import { format, differenceInWeeks, startOfDay } from 'date-fns';
 export const PROGRAM_START_DATE = new Date('2026-02-16');
 export const TOTAL_WEEKS = 65;
 
+export const isProgramActive = (): boolean => {
+  return startOfDay(new Date()) >= startOfDay(PROGRAM_START_DATE);
+};
+
+export const getDaysUntilStart = (): number => {
+  const today = startOfDay(new Date());
+  const start = startOfDay(PROGRAM_START_DATE);
+  if (today >= start) return 0;
+  return Math.ceil((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+};
+
 export const getCurrentWeek = (): number => {
+  if (!isProgramActive()) return 0;
   const today = new Date();
   const weeksDiff = differenceInWeeks(startOfDay(today), startOfDay(PROGRAM_START_DATE));
-  // Ensure we're at least in Week 1 and don't exceed total weeks
   return Math.min(Math.max(1, weeksDiff + 1), TOTAL_WEEKS);
 };
 
 export const getProgress = (currentWeek: number, totalWeeks: number = TOTAL_WEEKS): number => {
+  if (currentWeek <= 0) return 0;
   return Math.min((currentWeek / totalWeeks) * 100, 100);
 };
 
@@ -33,14 +45,10 @@ export const formatDate = (date: Date): string => {
   return format(date, 'yyyy-MM-dd');
 };
 
-export const isProgramActive = (): boolean => {
-  const today = new Date();
-  return today >= PROGRAM_START_DATE;
-};
-
 export const getDaysIntoProgram = (): number => {
-  const today = new Date();
-  const diffTime = Math.abs(today.getTime() - PROGRAM_START_DATE.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+  if (!isProgramActive()) return 0;
+  const today = startOfDay(new Date());
+  const start = startOfDay(PROGRAM_START_DATE);
+  const diffTime = today.getTime() - start.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };

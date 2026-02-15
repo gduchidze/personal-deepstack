@@ -36,3 +36,18 @@ export interface NotificationSchedule {
   title: string;
   body: string;
 }
+
+export interface FocusSession {
+  id: string;
+  date: string;
+  duration: number; // minutes completed
+  targetDuration: number; // minutes target
+  type: 'deep_work' | 'dsa' | 'practice' | 'theory';
+  timestamp: number;
+}
+
+export interface DailyNote {
+  date: string;
+  note: string;
+  timestamp: number;
+}

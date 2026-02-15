@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { CheckSquare, Square, BookOpen, Code2, Brain } from 'lucide-react-native';
-import { getCurrentWeek } from '../utils/dateUtils';
+import { getCurrentWeek, isProgramActive } from '../utils/dateUtils';
 import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Goal {
@@ -15,15 +15,31 @@ interface Goal {
 
 const GOALS_KEY = '@deepstack_weekly_goals';
 
-export const WeeklyGoals: React.FC = () => {
+interface Props {
+  refreshKey?: number;
+}
+
+export const WeeklyGoals: React.FC<Props> = ({ refreshKey }) => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const currentWeek = getCurrentWeek();
 
   useEffect(() => {
     loadGoals();
-  }, [currentWeek]);
+  }, [currentWeek, refreshKey]);
 
   const loadGoals = async () => {
+    if (currentWeek === 0) {
+      const defaultGoals: Goal[] = [
+        { id: '1', title: 'კარპათის ვიდეო ნახე', category: 'theory', completed: false },
+        { id: '2', title: '3+ პრაქტიკული ამოცანა', category: 'practice', completed: false },
+        { id: '3', title: '5+ DSA პრობლემა', category: 'dsa', completed: false },
+        { id: '4', title: 'კვირის პროექტი დაასრულე', category: 'practice', completed: false },
+        { id: '5', title: 'თეორიული მასალა გადაიხედე', category: 'theory', completed: false },
+      ];
+      setGoals(defaultGoals);
+      return;
+    }
+
     try {
       const stored = await AsyncStorage.getItem(`${GOALS_KEY}_week_${currentWeek}`);
       if (stored) {
@@ -45,6 +61,7 @@ export const WeeklyGoals: React.FC = () => {
   };
 
   const toggleGoal = async (goalId: string) => {
+    if (currentWeek === 0) return;
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     const updatedGoals = goals.map(goal =>
@@ -79,12 +96,15 @@ export const WeeklyGoals: React.FC = () => {
   };
 
   const completionPercentage = getCompletionPercentage();
+  const programActive = isProgramActive();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <CheckSquare color={colors.primary} size={24} />
-        <Text style={styles.title}>კვირის მიზნები - კვირა {currentWeek}</Text>
+        <Text style={styles.title}>
+          {currentWeek === 0 ? 'კვირის მიზნები - მალე იწყება' : `კვირის მიზნები - კვირა ${currentWeek}`}
+        </Text>
       </View>
 
       <View style={styles.progressBar}>
@@ -96,15 +116,20 @@ export const WeeklyGoals: React.FC = () => {
         {goals.map((goal) => (
           <TouchableOpacity
             key={goal.id}
-            style={[styles.goalItem, goal.completed && styles.goalItemCompleted]}
+            style={[
+              styles.goalItem,
+              goal.completed && styles.goalItemCompleted,
+              !programActive && styles.goalItemDisabled,
+            ]}
             onPress={() => toggleGoal(goal.id)}
             activeOpacity={0.7}
+            disabled={!programActive}
           >
             <View style={styles.goalIcon}>
               {goal.completed ? (
                 <CheckSquare color={colors.primary} size={20} />
               ) : (
-                <Square color={colors.textSecondary} size={20} />
+                <Square color={programActive ? colors.textSecondary : colors.textDark} size={20} />
               )}
             </View>
             <View style={styles.goalContent}>
@@ -180,6 +205,9 @@ const styles = StyleSheet.create({
   goalItemCompleted: {
     borderColor: colors.primary,
     backgroundColor: colors.primaryBg,
+  },
+  goalItemDisabled: {
+    opacity: 0.5,
   },
   goalIcon: {
     marginRight: 12,

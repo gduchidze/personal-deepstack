@@ -1,14 +1,7 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import React, { useRef } from 'react';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
-
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface Props {
   title: string;
@@ -22,19 +15,19 @@ interface Props {
 
 const VARIANTS = {
   primary: {
-    colors: ['#00ff41', '#00cc33', '#00aa28'],
+    colors: ['#00ff41', '#00cc33', '#00aa28'] as const,
     textColor: '#000000',
   },
   secondary: {
-    colors: ['#00bfff', '#0099cc', '#007799'],
+    colors: ['#00bfff', '#0099cc', '#007799'] as const,
     textColor: '#ffffff',
   },
   success: {
-    colors: ['#00ff88', '#00cc66', '#00aa55'],
+    colors: ['#00ff88', '#00cc66', '#00aa55'] as const,
     textColor: '#000000',
   },
   danger: {
-    colors: ['#ff6b6b', '#ff4444', '#cc0000'],
+    colors: ['#ff6b6b', '#ff4444', '#cc0000'] as const,
     textColor: '#ffffff',
   },
 };
@@ -48,22 +41,16 @@ export const PremiumButton: React.FC<Props> = ({
   textStyle,
   disabled = false,
 }) => {
-  const scale = useSharedValue(1);
+  const scale = useRef(new Animated.Value(1)).current;
   const variantStyle = VARIANTS[variant];
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
-
   const handlePressIn = () => {
-    scale.value = withSpring(0.95);
+    Animated.spring(scale, { toValue: 0.95, useNativeDriver: true }).start();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1);
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
   };
 
   const handlePress = () => {
@@ -72,42 +59,43 @@ export const PremiumButton: React.FC<Props> = ({
   };
 
   return (
-    <AnimatedTouchable
-      style={[styles.container, animatedStyle, style]}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      onPress={handlePress}
-      activeOpacity={0.9}
-      disabled={disabled}
-    >
-      <LinearGradient
-        colors={disabled ? ['#333', '#222'] : variantStyle.colors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
+    <Animated.View style={[styles.container, { transform: [{ scale }] }, style]}>
+      <TouchableOpacity
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={handlePress}
+        activeOpacity={0.9}
+        disabled={disabled}
       >
-        {icon && <>{icon}</>}
-        <Text
-          style={[
-            styles.text,
-            { color: disabled ? '#666' : variantStyle.textColor },
-            textStyle,
-          ]}
-        >
-          {title}
-        </Text>
-      </LinearGradient>
-
-      {/* Shine Effect */}
-      {!disabled && (
         <LinearGradient
-          colors={['transparent', 'rgba(255, 255, 255, 0.3)', 'transparent']}
+          colors={disabled ? ['#333', '#222'] : [...variantStyle.colors]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.shine}
-        />
-      )}
-    </AnimatedTouchable>
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {icon && <>{icon}</>}
+          <Text
+            style={[
+              styles.text,
+              { color: disabled ? '#666' : variantStyle.textColor },
+              textStyle,
+            ]}
+          >
+            {title}
+          </Text>
+        </LinearGradient>
+
+        {/* Shine Effect */}
+        {!disabled && (
+          <LinearGradient
+            colors={['transparent', 'rgba(255, 255, 255, 0.3)', 'transparent']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.shine}
+          />
+        )}
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
 

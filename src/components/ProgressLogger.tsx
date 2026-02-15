@@ -10,13 +10,18 @@ import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LOGS_KEY = '@deepstack_logs';
 
-export const ProgressLogger: React.FC = () => {
+interface Props {
+  refreshKey?: number;
+  onDataChange?: () => void;
+}
+
+export const ProgressLogger: React.FC<Props> = ({ refreshKey, onDataChange }) => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [todayCompleted, setTodayCompleted] = useState(false);
 
   useEffect(() => {
     loadLogs();
-  }, []);
+  }, [refreshKey]);
 
   const loadLogs = async () => {
     try {
@@ -52,6 +57,7 @@ export const ProgressLogger: React.FC = () => {
       await AsyncStorage.setItem(LOGS_KEY, JSON.stringify(updatedLogs));
       setLogs(updatedLogs);
       setTodayCompleted(!todayCompleted);
+      onDataChange?.();
     } catch (error) {
       console.error('Error saving log:', error);
     }
@@ -99,6 +105,7 @@ export const ProgressLogger: React.FC = () => {
             date.setDate(date.getDate() - (29 - index));
             const dateStr = formatDate(date);
             const log = logs.find((l) => l.date === dateStr);
+            const isToday = index === 29;
 
             return (
               <View
@@ -106,12 +113,14 @@ export const ProgressLogger: React.FC = () => {
                 style={[
                   styles.heatmapCell,
                   log?.completed && styles.heatmapCellCompleted,
+                  isToday && styles.heatmapCellToday,
                 ]}
               />
             );
           })}
         </View>
       </ScrollView>
+      <Text style={styles.heatmapLabel}>ბოლო 30 დღე</Text>
     </View>
   );
 };
@@ -194,5 +203,16 @@ const styles = StyleSheet.create({
   heatmapCellCompleted: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
+  },
+  heatmapCellToday: {
+    borderColor: colors.orange,
+    borderWidth: 2,
+  },
+  heatmapLabel: {
+    fontFamily: typography.fontFamily,
+    fontSize: 10,
+    color: colors.textDark,
+    textAlign: 'center',
+    marginTop: 8,
   },
 });
