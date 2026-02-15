@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { BookOpen, ArrowLeft, FileText, Calendar } from 'lucide-react-native';
+import { Asset } from 'expo-asset';
 import { colors, spacing, borderRadius, typography } from '../theme';
 
 // Import markdown files as strings
@@ -49,7 +50,9 @@ export const ArticlesViewer: React.FC = () => {
 
   const loadArticle = async (article: Article) => {
     try {
-      const response = await fetch(article.content);
+      const asset = Asset.fromModule(article.content);
+      await asset.downloadAsync();
+      const response = await fetch(asset.localUri!);
       const text = await response.text();
       setContent(text);
       setSelectedArticle(article);
