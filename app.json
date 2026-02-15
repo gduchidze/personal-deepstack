@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.deepstack.app"
+      "bundleIdentifier": "com.deepstack.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,6 +44,11 @@
           "sounds": []
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "90873c0e-4801-42b7-9d3e-b4df75eca44b"
+      }
+    }
   }
 }
