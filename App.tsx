@@ -13,16 +13,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { parseXLSXData } from './src/utils/dataParser';
 import { setupNotifications, scheduleNotifications } from './src/utils/notifications';
 import { CurrentActivityBlock } from './src/components/CurrentActivityBlock';
+import { EnhancedCurrentActivity } from './src/components/EnhancedCurrentActivity';
 import { RoadmapTracker } from './src/components/RoadmapTracker';
 import { ProgressLogger } from './src/components/ProgressLogger';
 import { DailySchedule } from './src/components/DailySchedule';
 import { AchievementBadges } from './src/components/AchievementBadges';
 import { WeeklyGoals } from './src/components/WeeklyGoals';
 import { StatsPanel } from './src/components/StatsPanel';
+import { EnhancedStatsPanel } from './src/components/EnhancedStatsPanel';
 import { SettingsPanel } from './src/components/SettingsPanel';
 import { ArticlesViewer } from './src/components/ArticlesViewer';
+import { AnimatedBackground } from './src/components/AnimatedBackground';
+import { ParticleField } from './src/components/ParticleField';
+import { GlassMorphCard } from './src/components/GlassMorphCard';
 import { DaySchedule, RoadmapWeek } from './src/types';
 import { Terminal, Home, BarChart3, BookOpen } from 'lucide-react-native';
+import * as Animatable from 'react-native-animatable';
 
 type TabType = 'home' | 'stats' | 'articles';
 
@@ -73,7 +79,7 @@ export default function App() {
       case 'home':
         return (
           <>
-            <CurrentActivityBlock scheduleData={scheduleData} />
+            <EnhancedCurrentActivity scheduleData={scheduleData} />
             <RoadmapTracker weekData={weekData} />
             <AchievementBadges />
             <WeeklyGoals />
@@ -84,7 +90,7 @@ export default function App() {
       case 'stats':
         return (
           <>
-            <StatsPanel />
+            <EnhancedStatsPanel />
             <AchievementBadges />
             <ProgressLogger />
           </>
@@ -99,17 +105,20 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
-      <LinearGradient colors={['#000000', '#0a0a0a', '#000000']} style={styles.background}>
+      <AnimatedBackground>
+        <ParticleField />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <View style={styles.header}>
+          <Animatable.View animation="fadeInDown" duration={1000} style={styles.header}>
             <Terminal color="#00ff41" size={32} />
             <Text style={styles.headerTitle}>DEEPSTACK</Text>
-          </View>
-          <Text style={styles.headerSubtitle}>AI Engineer 15-Month Protocol</Text>
+          </Animatable.View>
+          <Animatable.Text animation="fadeIn" delay={500} style={styles.headerSubtitle}>
+            AI Engineer 15-Month Protocol
+          </Animatable.Text>
 
           {/* Tab Navigation */}
           <View style={styles.tabContainer}>
@@ -156,10 +165,10 @@ export default function App() {
           {/* Footer */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>⚡ Built with precision & discipline</Text>
-            <Text style={styles.footerVersion}>v2.0.0 | DeepStack Protocol Engine</Text>
+            <Text style={styles.footerVersion}>v3.0.0 | DeepStack Protocol Engine</Text>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </AnimatedBackground>
     </SafeAreaView>
   );
 }
